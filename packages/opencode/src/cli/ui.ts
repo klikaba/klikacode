@@ -4,11 +4,11 @@ import { NamedError } from "@opencode-ai/util/error"
 
 export namespace UI {
   const LOGO = [
-    ["K  K LLL I K  K  A  ", " CCC OOO DDD EEE"],
-    ["K K  L   I K K  A A ", "C    O O D  D E  "],
-    ["KK   L   I KK   AAA ", "C    O O D  D EE "],
-    ["K K  L   I K K  A A ", "C    O O D  D E  "],
-    ["K  K LLL I K  K A A ", " CCC OOO DDD EEE"],
+    ["K  K LLL I K  K  A   ", " CCC OOO DDD EEE"],
+    ["K K  L   I K K  A A  ", "C    O O D  D E  "],
+    ["KK   L   I KK   AAA  ", "C    O O D  D EE "],
+    ["K K  L   I K K  A A  ", "C    O O D  D E  "],
+    ["K  K LLL I K  K A A  ", " CCC OOO DDD EEE"],
   ]
 
   export const CancelledError = NamedError.create("UICancelledError", z.void())
