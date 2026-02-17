@@ -7,7 +7,7 @@
     </picture>
   </a>
 </p>
-<p align="center"><strong>Klika Code</strong> — The open source AI coding agent.</p>
+<p align="center"><strong>Klika Code</strong> — The open source AI coding agent for your terminal.</p>
 <p align="center">
   <a href="https://github.com/klikaba/klikacode"><img alt="GitHub stars" src="https://img.shields.io/github/stars/klikaba/klikacode?style=flat-square" /></a>
   <a href="https://github.com/anomalyco/opencode/actions/workflows/publish.yml"><img alt="Upstream build status" src="https://img.shields.io/github/actions/workflow/status/anomalyco/opencode/publish.yml?style=flat-square&branch=dev" /></a>
@@ -18,58 +18,33 @@
 ---
 
 > [!NOTE]
-> **Klika Code** is a customized fork of [OpenCode](https://github.com/anomalyco/opencode), tailored for Klika's development workflows. It maintains full compatibility with upstream while adding our team-specific configurations and branding.
+> **Klika Code** is a customized fork of [OpenCode](https://github.com/anomalyco/opencode), tailored for Klika's development workflows. This fork focuses on the **terminal CLI** — desktop and web apps are maintained by upstream OpenCode.
 
 ### Installation
 
 ```bash
-# From upstream OpenCode (recommended for stability)
+# YOLO install
 curl -fsSL https://opencode.ai/install | bash
 
 # Package managers
 npm i -g opencode-ai@latest        # or bun/pnpm/yarn
 scoop bucket add extras; scoop install extras/opencode  # Windows
 choco install opencode             # Windows
-brew install anomalyco/tap/opencode # macOS and Linux (recommended, always up to date)
-brew install opencode              # macOS and Linux (official brew formula, updated less)
+brew install anomalyco/tap/opencode # macOS and Linux (recommended)
+brew install opencode              # macOS and Linux
 paru -S opencode-bin               # Arch Linux
 mise use -g opencode               # Any OS
-nix run nixpkgs#opencode           # or github:anomalyco/opencode for latest dev branch
+nix run nixpkgs#opencode           # or github:anomalyco/opencode
+```
+
+After installation, run the CLI with:
+
+```bash
+klika-code
 ```
 
 > [!TIP]
 > Remove versions older than 0.1.x before installing.
-
-### Desktop App (BETA)
-
-OpenCode is also available as a desktop application. Download directly from the [releases page](https://github.com/anomalyco/opencode/releases) or [opencode.ai/download](https://opencode.ai/download).
-
-| Platform              | Download                              |
-| --------------------- | ------------------------------------- |
-| macOS (Apple Silicon) | `opencode-desktop-darwin-aarch64.dmg` |
-| macOS (Intel)         | `opencode-desktop-darwin-x64.dmg`     |
-| Windows               | `opencode-desktop-windows-x64.exe`    |
-| Linux                 | `.deb`, `.rpm`, or AppImage           |
-
-```bash
-# macOS (Homebrew)
-brew install --cask opencode-desktop
-```
-
-#### Installation Directory
-
-The install script respects the following priority order for the installation path:
-
-1. `$OPENCODE_INSTALL_DIR` - Custom installation directory
-2. `$XDG_BIN_DIR` - XDG Base Directory Specification compliant path
-3. `$HOME/bin` - Standard user binary directory (if exists or can be created)
-4. `$HOME/.opencode/bin` - Default fallback
-
-```bash
-# Examples
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
-```
 
 ### Agents
 
@@ -107,7 +82,7 @@ It's very similar to Claude Code in terms of capability. Here are the key differ
 - 100% open source
 - Not coupled to any provider. Although we recommend the models we provide through [OpenCode Zen](https://opencode.ai/zen); OpenCode can be used with Claude, OpenAI, Google or even local models. As models evolve the gaps between them will close and pricing will drop so being provider-agnostic is important.
 - Out of the box LSP support
-- A focus on TUI. OpenCode is built by neovim users and the creators of [terminal.shop](https://terminal.shop); we are going to push the limits of what's possible in the terminal.
+- **A focus on TUI** — OpenCode is built by neovim users and the creators of [terminal.shop](https://terminal.shop); we push the limits of what's possible in the terminal.
 - A client/server architecture. This for example can allow OpenCode to run on your computer, while you can drive it remotely from a mobile app. Meaning that the TUI frontend is just one of the possible clients.
 
 #### How is Klika Code different from OpenCode?
