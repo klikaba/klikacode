@@ -1,16 +1,3 @@
-<pre align="center">
-  _  __    _    __  __           _       
- | |/ /   | |  |  \/  |         | |      
- | ' / ___| |  | \  / | __ _  __| |  ___ 
- |  < / _ \ |  | |\/| |/ _` |/ _` | / _ \
- | . \  __/ |  | |  | | (_| | (_| ||  __/
- |_|\_\___|_|  |_|  |_|\__,_|\__,_| \___|
-  ____  _  _  ___  ____  ____  ____  ____ 
- / ___|(_)| || __||  _ \|  _ \| __ )| ____|
-| |    | || || _| | |_) | |_) |  _ \|  _|  
-| |___ | || || |___|  __/|  __/| |_) | |___ 
- \____||_||_||_____||_|   |_|   |____/|_____|
-</pre>
 <p align="center"><strong>Klika Code</strong> — The open source AI coding agent for your terminal.</p>
 <p align="center">
   <a href="https://github.com/klikaba/klikacode"><img alt="GitHub stars" src="https://img.shields.io/github/stars/klikaba/klikacode?style=flat-square" /></a>
