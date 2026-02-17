@@ -1,12 +1,11 @@
-<p align="center">
-  <a href="https://github.com/klikaba/klikacode">
-    <picture>
-      <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
-      <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="Klika Code logo">
-    </picture>
-  </a>
-</p>
+<pre align="center">
+  _  __     _    __  __           _       
+ | |/ /    | |  |  \/  |         | |      
+ | ' / ___ | |  | \  / | __ _  __| |  ___ 
+ |  < / _ \| |  | |\/| |/ _` |/ _` | / _ \
+ | . \ (_) | |  | |  | | (_| | (_| ||  __/
+ |_|\_\___/|_|  |_|  |_|\__,_|\__,_| \___|
+</pre>
 <p align="center"><strong>Klika Code</strong> — The open source AI coding agent for your terminal.</p>
 <p align="center">
   <a href="https://github.com/klikaba/klikacode"><img alt="GitHub stars" src="https://img.shields.io/github/stars/klikaba/klikacode?style=flat-square" /></a>
