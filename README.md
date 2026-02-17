@@ -1,27 +1,29 @@
 <p align="center">
-  <a href="https://opencode.ai">
+  <a href="https://github.com/klikaba/klikacode">
     <picture>
       <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
       <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="OpenCode logo">
+      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="Klika Code logo">
     </picture>
   </a>
 </p>
-<p align="center">The open source AI coding agent.</p>
+<p align="center"><strong>Klika Code</strong> — The open source AI coding agent.</p>
 <p align="center">
-  <a href="https://opencode.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
-  <a href="https://www.npmjs.com/package/opencode-ai"><img alt="npm" src="https://img.shields.io/npm/v/opencode-ai?style=flat-square" /></a>
-  <a href="https://github.com/anomalyco/opencode/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/anomalyco/opencode/publish.yml?style=flat-square&branch=dev" /></a>
+  <a href="https://github.com/klikaba/klikacode"><img alt="GitHub stars" src="https://img.shields.io/github/stars/klikaba/klikacode?style=flat-square" /></a>
+  <a href="https://github.com/anomalyco/opencode/actions/workflows/publish.yml"><img alt="Upstream build status" src="https://img.shields.io/github/actions/workflow/status/anomalyco/opencode/publish.yml?style=flat-square&branch=dev" /></a>
 </p>
 
-[![OpenCode Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://opencode.ai)
+[![Klika Code Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://github.com/klikaba/klikacode)
 
 ---
+
+> [!NOTE]
+> **Klika Code** is a customized fork of [OpenCode](https://github.com/anomalyco/opencode), tailored for Klika's development workflows. It maintains full compatibility with upstream while adding our team-specific configurations and branding.
 
 ### Installation
 
 ```bash
-# YOLO
+# From upstream OpenCode (recommended for stability)
 curl -fsSL https://opencode.ai/install | bash
 
 # Package managers
@@ -71,7 +73,7 @@ XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
 
 ### Agents
 
-OpenCode includes two built-in agents you can switch between with the `Tab` key.
+Klika Code includes two built-in agents you can switch between with the `Tab` key.
 
 - **build** - Default, full access agent for development work
 - **plan** - Read-only agent for analysis and code exploration
@@ -86,15 +88,15 @@ Learn more about [agents](https://opencode.ai/docs/agents).
 
 ### Documentation
 
-For more info on how to configure OpenCode [**head over to our docs**](https://opencode.ai/docs).
+For more info on how to configure Klika Code, see the [**official OpenCode documentation**](https://opencode.ai/docs).
 
 ### Contributing
 
-If you're interested in contributing to OpenCode, please read our [contributing docs](./CONTRIBUTING.md) before submitting a pull request.
+If you're interested in contributing to Klika Code, please read our [contributing docs](./CONTRIBUTING.md) before submitting a pull request.
 
-### Building on OpenCode
+### Building on Klika Code
 
-If you are working on a project that's related to OpenCode and is using "opencode" as a part of its name; for example, "opencode-dashboard" or "opencode-mobile", please add a note to your README to clarify that it is not built by the OpenCode team and is not affiliated with us in any way.
+If you are working on a project that's related to Klika Code and is using "klikacode" or "klika-code" as a part of its name; for example, "klikacode-dashboard" or "klika-code-mobile", please add a note to your README to clarify that it is not built by the Klika Code team and is not affiliated with us in any way.
 
 ### FAQ
 
@@ -108,6 +110,17 @@ It's very similar to Claude Code in terms of capability. Here are the key differ
 - A focus on TUI. OpenCode is built by neovim users and the creators of [terminal.shop](https://terminal.shop); we are going to push the limits of what's possible in the terminal.
 - A client/server architecture. This for example can allow OpenCode to run on your computer, while you can drive it remotely from a mobile app. Meaning that the TUI frontend is just one of the possible clients.
 
+#### How is Klika Code different from OpenCode?
+
+Klika Code is a branded fork of OpenCode with:
+- Klika-specific branding and agent identity
+- Custom configurations for Klika's development environment
+- Full compatibility with upstream OpenCode updates
+
+We regularly sync with [upstream OpenCode](https://github.com/anomalyco/opencode) to stay current with new features and improvements.
+
 ---
 
 **Join our community** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+
+**Klika Code** is maintained by [Klika](https://github.com/klikaba). For upstream issues, see [OpenCode](https://github.com/anomalyco/opencode).
