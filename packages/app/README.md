@@ -1,34 +1,69 @@
+# Klika Code App
+
+Shared web UI components for Klika Code, built with SolidJS.
+
 ## Usage
 
-Dependencies for these templates are managed with [pnpm](https://pnpm.io) using `pnpm up -Lri`.
+This package provides the core UI components used by:
+- `packages/web` - Web application
+- `packages/desktop` - Desktop app (via Tauri)
 
-This is the reason you see a `pnpm-lock.yaml`. That said, any package manager will work. This file can safely be removed once you clone a template.
+## Development
 
 ```bash
-$ npm install # or pnpm install or yarn install
+# From repo root
+bun run --cwd packages/app dev
 ```
 
-### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
+Starts Vite dev server at http://localhost:5173
 
-## Available Scripts
+Most UI changes can be tested here without launching the full TUI or desktop app.
 
-In the project directory, you can run:
+## Build
 
-### `npm run dev` or `npm start`
+```bash
+bun run --cwd packages/app build
+```
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Outputs to `packages/app/dist/`
 
-The page will reload if you make edits.<br>
+## Architecture
 
-### `npm run build`
+- **Framework**: SolidJS 1.9+
+- **Styling**: Tailwind CSS 4
+- **Routing**: Solid Router
+- **State**: Solid stores and contexts
+- **Build**: Vite
 
-Builds the app for production to the `dist` folder.<br>
-It correctly bundles Solid in production mode and optimizes the build for the best performance.
+## Key Components
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+- `components/` - Reusable UI components
+- `pages/` - Route pages
+- `context/` - Reactivity contexts
+- `hooks/` - SolidJS hooks
+- `utils/` - Helper functions
+
+## Integration
+
+Components from this package are imported into:
+- `packages/web/src/` - Web app entry point
+- `packages/desktop/src/` - Desktop app wrapper
+
+## Styling
+
+Uses Tailwind CSS 4 via Vite plugin.
+
+## Testing UI Changes
+
+1. Make changes in `packages/app/src/`
+2. Run `bun run --cwd packages/app dev`
+3. View at http://localhost:5173
+4. Changes hot-reload automatically
 
 ## Deployment
 
-You can deploy the `dist` folder to any static host provider (netlify, surge, now, etc.)
+The `dist/` folder can be deployed to any static host:
+- Netlify
+- Vercel
+- Cloudflare Pages
+- GitHub Pages
