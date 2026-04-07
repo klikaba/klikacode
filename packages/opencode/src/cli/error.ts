@@ -1,5 +1,4 @@
 import { ConfigMarkdown } from "@/config/markdown"
-import { errorFormat } from "@/util/error"
 import { Config } from "../config/config"
 import { MCP } from "../mcp"
 import { Provider } from "../provider/provider"
@@ -7,13 +6,13 @@ import { UI } from "./ui"
 
 export function FormatError(input: unknown) {
   if (MCP.Failed.isInstance(input))
-    return `MCP server "${input.data.name}" failed. Note, opencode does not support MCP authentication yet.`
+    return `MCP server "${input.data.name}" failed. Note, Klika Code does not support MCP authentication yet.`
   if (Provider.ModelNotFoundError.isInstance(input)) {
     const { providerID, modelID, suggestions } = input.data
     return [
       `Model not found: ${providerID}/${modelID}`,
       ...(Array.isArray(suggestions) && suggestions.length ? ["Did you mean: " + suggestions.join(", ")] : []),
-      `Try: \`opencode models\` to list available models`,
+      `Try: \`klika-code models\` to list available models`,
       `Or check your config (opencode.json) provider/model names`,
     ].join("\n")
   }
@@ -29,7 +28,7 @@ export function FormatError(input: unknown) {
     return `Directory "${input.data.dir}" in ${input.data.path} is not valid. Rename the directory to "${input.data.suggestion}" or remove it. This is a common typo.`
   }
   if (ConfigMarkdown.FrontmatterError.isInstance(input)) {
-    return input.data.message
+    return `Failed to parse frontmatter in ${input.data.path}:\n${input.data.message}`
   }
   if (Config.InvalidError.isInstance(input))
     return [
@@ -42,5 +41,17 @@ export function FormatError(input: unknown) {
 }
 
 export function FormatUnknownError(input: unknown): string {
-  return errorFormat(input)
+  if (input instanceof Error) {
+    return input.stack ?? `${input.name}: ${input.message}`
+  }
+
+  if (typeof input === "object" && input !== null) {
+    try {
+      return JSON.stringify(input, null, 2)
+    } catch {
+      return "Unexpected error (unserializable)"
+    }
+  }
+
+  return String(input)
 }

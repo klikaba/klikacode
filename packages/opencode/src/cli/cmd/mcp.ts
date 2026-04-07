@@ -13,8 +13,6 @@ import { Installation } from "../../installation"
 import path from "path"
 import { Global } from "../../global"
 import { modify, applyEdits } from "jsonc-parser"
-import { Filesystem } from "../../util/filesystem"
-import { Bus } from "../../bus"
 
 function getAuthStatusIcon(status: MCP.AuthStatus): string {
   switch (status) {
@@ -85,7 +83,7 @@ export const McpListCommand = cmd({
 
         if (servers.length === 0) {
           prompts.log.warn("No MCP servers configured")
-          prompts.outro("Add servers with: opencode mcp add")
+          prompts.outro("Add servers with: klika-code mcp add")
           return
         }
 
@@ -229,16 +227,6 @@ export const McpAuthCommand = cmd({
         const spinner = prompts.spinner()
         spinner.start("Starting OAuth flow...")
 
-        // Subscribe to browser open failure events to show URL for manual opening
-        const unsubscribe = Bus.subscribe(MCP.BrowserOpenFailed, (evt) => {
-          if (evt.properties.mcpName === serverName) {
-            spinner.stop("Could not open browser automatically")
-            prompts.log.warn("Please open this URL in your browser to authenticate:")
-            prompts.log.info(evt.properties.url)
-            spinner.start("Waiting for authorization...")
-          }
-        })
-
         try {
           const status = await MCP.authenticate(serverName)
 
@@ -268,8 +256,6 @@ export const McpAuthCommand = cmd({
         } catch (error) {
           spinner.stop("Authentication failed", 1)
           prompts.log.error(error instanceof Error ? error.message : String(error))
-        } finally {
-          unsubscribe()
         }
 
         prompts.outro("Done")
@@ -389,7 +375,7 @@ async function resolveConfigPath(baseDir: string, global = false) {
   }
 
   for (const candidate of candidates) {
-    if (await Filesystem.exists(candidate)) {
+    if (await Bun.file(candidate).exists()) {
       return candidate
     }
   }
@@ -399,9 +385,11 @@ async function resolveConfigPath(baseDir: string, global = false) {
 }
 
 async function addMcpToConfig(name: string, mcpConfig: Config.Mcp, configPath: string) {
+  const file = Bun.file(configPath)
+
   let text = "{}"
-  if (await Filesystem.exists(configPath)) {
-    text = await Filesystem.readText(configPath)
+  if (await file.exists()) {
+    text = await file.text()
   }
 
   // Use jsonc-parser to modify while preserving comments
@@ -410,7 +398,7 @@ async function addMcpToConfig(name: string, mcpConfig: Config.Mcp, configPath: s
   })
   const result = applyEdits(text, edits)
 
-  await Filesystem.write(configPath, result)
+  await Bun.write(configPath, result)
 
   return configPath
 }
@@ -481,7 +469,7 @@ export const McpAddCommand = cmd({
         if (type === "local") {
           const command = await prompts.text({
             message: "Enter command to run",
-            placeholder: "e.g., opencode x @modelcontextprotocol/server-filesystem",
+            placeholder: "e.g., klika-code x @modelcontextprotocol/server-filesystem",
             validate: (x) => (x && x.length > 0 ? undefined : "Required"),
           })
           if (prompts.isCancel(command)) throw new UI.CancelledError()

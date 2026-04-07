@@ -31,13 +31,13 @@ function getNetworkIPs() {
 export const WebCommand = cmd({
   command: "web",
   builder: (yargs) => withNetworkOptions(yargs),
-  describe: "start opencode server and open web interface",
+  describe: "start Klika Code server and open web interface",
   handler: async (args) => {
     if (!Flag.OPENCODE_SERVER_PASSWORD) {
       UI.println(UI.Style.TEXT_WARNING_BOLD + "!  " + "OPENCODE_SERVER_PASSWORD is not set; server is unsecured.")
     }
     const opts = await resolveNetworkOptions(args)
-    const server = await Server.listen(opts)
+    const server = Server.listen(opts)
     UI.empty()
     UI.println(UI.logo("  "))
     UI.empty()
@@ -60,11 +60,7 @@ export const WebCommand = cmd({
       }
 
       if (opts.mdns) {
-        UI.println(
-          UI.Style.TEXT_INFO_BOLD + "  mDNS:              ",
-          UI.Style.TEXT_NORMAL,
-          `${opts.mdnsDomain}:${server.port}`,
-        )
+        UI.println(UI.Style.TEXT_INFO_BOLD + "  mDNS:              ", UI.Style.TEXT_NORMAL, "opencode.local")
       }
 
       // Open localhost in browser

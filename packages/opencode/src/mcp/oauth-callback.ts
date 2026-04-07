@@ -1,5 +1,3 @@
-import { createConnection } from "net"
-import { createServer } from "http"
 import { Log } from "../util/log"
 import { OAUTH_CALLBACK_PORT, OAUTH_CALLBACK_PATH } from "./oauth-provider"
 
@@ -8,7 +6,7 @@ const log = Log.create({ service: "mcp.oauth-callback" })
 const HTML_SUCCESS = `<!DOCTYPE html>
 <html>
 <head>
-  <title>OpenCode - Authorization Successful</title>
+  <title>Klika Code - Authorization Successful</title>
   <style>
     body { font-family: system-ui, -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #1a1a2e; color: #eee; }
     .container { text-align: center; padding: 2rem; }
@@ -19,7 +17,7 @@ const HTML_SUCCESS = `<!DOCTYPE html>
 <body>
   <div class="container">
     <h1>Authorization Successful</h1>
-    <p>You can close this window and return to OpenCode.</p>
+    <p>You can close this window and return to Klika Code.</p>
   </div>
   <script>setTimeout(() => window.close(), 2000);</script>
 </body>
@@ -28,7 +26,7 @@ const HTML_SUCCESS = `<!DOCTYPE html>
 const HTML_ERROR = (error: string) => `<!DOCTYPE html>
 <html>
 <head>
-  <title>OpenCode - Authorization Failed</title>
+  <title>Klika Code - Authorization Failed</title>
   <style>
     body { font-family: system-ui, -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #1a1a2e; color: #eee; }
     .container { text-align: center; padding: 2rem; }
@@ -53,87 +51,10 @@ interface PendingAuth {
 }
 
 export namespace McpOAuthCallback {
-  let server: ReturnType<typeof createServer> | undefined
+  let server: ReturnType<typeof Bun.serve> | undefined
   const pendingAuths = new Map<string, PendingAuth>()
-  // Reverse index: mcpName → oauthState, so cancelPending(mcpName) can
-  // find the right entry in pendingAuths (which is keyed by oauthState).
-  const mcpNameToState = new Map<string, string>()
 
   const CALLBACK_TIMEOUT_MS = 5 * 60 * 1000 // 5 minutes
-
-  function cleanupStateIndex(oauthState: string) {
-    for (const [name, state] of mcpNameToState) {
-      if (state === oauthState) {
-        mcpNameToState.delete(name)
-        break
-      }
-    }
-  }
-
-  function handleRequest(req: import("http").IncomingMessage, res: import("http").ServerResponse) {
-    const url = new URL(req.url || "/", `http://localhost:${OAUTH_CALLBACK_PORT}`)
-
-    if (url.pathname !== OAUTH_CALLBACK_PATH) {
-      res.writeHead(404)
-      res.end("Not found")
-      return
-    }
-
-    const code = url.searchParams.get("code")
-    const state = url.searchParams.get("state")
-    const error = url.searchParams.get("error")
-    const errorDescription = url.searchParams.get("error_description")
-
-    log.info("received oauth callback", { hasCode: !!code, state, error })
-
-    // Enforce state parameter presence
-    if (!state) {
-      const errorMsg = "Missing required state parameter - potential CSRF attack"
-      log.error("oauth callback missing state parameter", { url: url.toString() })
-      res.writeHead(400, { "Content-Type": "text/html" })
-      res.end(HTML_ERROR(errorMsg))
-      return
-    }
-
-    if (error) {
-      const errorMsg = errorDescription || error
-      if (pendingAuths.has(state)) {
-        const pending = pendingAuths.get(state)!
-        clearTimeout(pending.timeout)
-        pendingAuths.delete(state)
-        cleanupStateIndex(state)
-        pending.reject(new Error(errorMsg))
-      }
-      res.writeHead(200, { "Content-Type": "text/html" })
-      res.end(HTML_ERROR(errorMsg))
-      return
-    }
-
-    if (!code) {
-      res.writeHead(400, { "Content-Type": "text/html" })
-      res.end(HTML_ERROR("No authorization code provided"))
-      return
-    }
-
-    // Validate state parameter
-    if (!pendingAuths.has(state)) {
-      const errorMsg = "Invalid or expired state parameter - potential CSRF attack"
-      log.error("oauth callback with invalid state", { state, pendingStates: Array.from(pendingAuths.keys()) })
-      res.writeHead(400, { "Content-Type": "text/html" })
-      res.end(HTML_ERROR(errorMsg))
-      return
-    }
-
-    const pending = pendingAuths.get(state)!
-
-    clearTimeout(pending.timeout)
-    pendingAuths.delete(state)
-    cleanupStateIndex(state)
-    pending.resolve(code)
-
-    res.writeHead(200, { "Content-Type": "text/html" })
-    res.end(HTML_SUCCESS)
-  }
 
   export async function ensureRunning(): Promise<void> {
     if (server) return
@@ -144,23 +65,82 @@ export namespace McpOAuthCallback {
       return
     }
 
-    server = createServer(handleRequest)
-    await new Promise<void>((resolve, reject) => {
-      server!.listen(OAUTH_CALLBACK_PORT, () => {
-        log.info("oauth callback server started", { port: OAUTH_CALLBACK_PORT })
-        resolve()
-      })
-      server!.on("error", reject)
+    server = Bun.serve({
+      port: OAUTH_CALLBACK_PORT,
+      fetch(req) {
+        const url = new URL(req.url)
+
+        if (url.pathname !== OAUTH_CALLBACK_PATH) {
+          return new Response("Not found", { status: 404 })
+        }
+
+        const code = url.searchParams.get("code")
+        const state = url.searchParams.get("state")
+        const error = url.searchParams.get("error")
+        const errorDescription = url.searchParams.get("error_description")
+
+        log.info("received oauth callback", { hasCode: !!code, state, error })
+
+        // Enforce state parameter presence
+        if (!state) {
+          const errorMsg = "Missing required state parameter - potential CSRF attack"
+          log.error("oauth callback missing state parameter", { url: url.toString() })
+          return new Response(HTML_ERROR(errorMsg), {
+            status: 400,
+            headers: { "Content-Type": "text/html" },
+          })
+        }
+
+        if (error) {
+          const errorMsg = errorDescription || error
+          if (pendingAuths.has(state)) {
+            const pending = pendingAuths.get(state)!
+            clearTimeout(pending.timeout)
+            pendingAuths.delete(state)
+            pending.reject(new Error(errorMsg))
+          }
+          return new Response(HTML_ERROR(errorMsg), {
+            headers: { "Content-Type": "text/html" },
+          })
+        }
+
+        if (!code) {
+          return new Response(HTML_ERROR("No authorization code provided"), {
+            status: 400,
+            headers: { "Content-Type": "text/html" },
+          })
+        }
+
+        // Validate state parameter
+        if (!pendingAuths.has(state)) {
+          const errorMsg = "Invalid or expired state parameter - potential CSRF attack"
+          log.error("oauth callback with invalid state", { state, pendingStates: Array.from(pendingAuths.keys()) })
+          return new Response(HTML_ERROR(errorMsg), {
+            status: 400,
+            headers: { "Content-Type": "text/html" },
+          })
+        }
+
+        const pending = pendingAuths.get(state)!
+
+        clearTimeout(pending.timeout)
+        pendingAuths.delete(state)
+        pending.resolve(code)
+
+        return new Response(HTML_SUCCESS, {
+          headers: { "Content-Type": "text/html" },
+        })
+      },
     })
+
+    log.info("oauth callback server started", { port: OAUTH_CALLBACK_PORT })
   }
 
-  export function waitForCallback(oauthState: string, mcpName?: string): Promise<string> {
-    if (mcpName) mcpNameToState.set(mcpName, oauthState)
+  export function waitForCallback(oauthState: string): Promise<string> {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         if (pendingAuths.has(oauthState)) {
           pendingAuths.delete(oauthState)
-          if (mcpName) mcpNameToState.delete(mcpName)
           reject(new Error("OAuth callback timeout - authorization took too long"))
         }
       }, CALLBACK_TIMEOUT_MS)
@@ -170,26 +150,31 @@ export namespace McpOAuthCallback {
   }
 
   export function cancelPending(mcpName: string): void {
-    // Look up the oauthState for this mcpName via the reverse index
-    const oauthState = mcpNameToState.get(mcpName)
-    const key = oauthState ?? mcpName
-    const pending = pendingAuths.get(key)
+    const pending = pendingAuths.get(mcpName)
     if (pending) {
       clearTimeout(pending.timeout)
-      pendingAuths.delete(key)
-      mcpNameToState.delete(mcpName)
+      pendingAuths.delete(mcpName)
       pending.reject(new Error("Authorization cancelled"))
     }
   }
 
   export async function isPortInUse(): Promise<boolean> {
     return new Promise((resolve) => {
-      const socket = createConnection(OAUTH_CALLBACK_PORT, "127.0.0.1")
-      socket.on("connect", () => {
-        socket.destroy()
-        resolve(true)
-      })
-      socket.on("error", () => {
+      Bun.connect({
+        hostname: "127.0.0.1",
+        port: OAUTH_CALLBACK_PORT,
+        socket: {
+          open(socket) {
+            socket.end()
+            resolve(true)
+          },
+          error() {
+            resolve(false)
+          },
+          data() {},
+          close() {},
+        },
+      }).catch(() => {
         resolve(false)
       })
     })
@@ -197,7 +182,7 @@ export namespace McpOAuthCallback {
 
   export async function stop(): Promise<void> {
     if (server) {
-      await new Promise<void>((resolve) => server!.close(() => resolve()))
+      server.stop()
       server = undefined
       log.info("oauth callback server stopped")
     }
@@ -207,7 +192,6 @@ export namespace McpOAuthCallback {
       pending.reject(new Error("OAuth callback server stopped"))
     }
     pendingAuths.clear()
-    mcpNameToState.clear()
   }
 
   export function isRunning(): boolean {

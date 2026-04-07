@@ -1,32 +1,94 @@
-# OpenCode Desktop
+# Klika Code Desktop
 
-Native OpenCode desktop app, built with Tauri v2.
+Native Klika Code desktop app, built with Tauri v2.
 
-## Prerequisites
-
-Building the desktop app requires additional Tauri dependencies (Rust toolchain, platform-specific libraries). See the [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) for setup instructions.
-
-## Development
-
-From the repo root:
+## Quick Start
 
 ```bash
+# From repo root
 bun install
 bun run --cwd packages/desktop tauri dev
 ```
 
-## Build
+This starts:
+1. Vite dev server on http://localhost:1420
+2. Native Tauri window with the app
+
+## Development
+
+### Web-only mode (no native window)
+
+```bash
+bun run --cwd packages/desktop dev
+```
+
+Useful for testing UI changes without launching the native shell.
+
+### Build for Production
 
 ```bash
 bun run --cwd packages/desktop tauri build
 ```
 
-## Troubleshooting
+Creates platform-specific bundles in `packages/desktop/src-tauri/target/release/bundle/`:
+- macOS: `.dmg` and `.app`
+- Windows: `.exe` and `.msi`
+- Linux: `.deb`, `.rpm`, and `.AppImage`
 
-### Rust compiler not found
+## Architecture
 
-If you see errors about Rust not being found, install it via [rustup](https://rustup.rs/):
+- **Frontend**: SolidJS (wraps `packages/app`)
+- **Backend**: Rust + Tauri v2
+- **IPC**: Tauri commands for native functionality
+
+## Prerequisites
+
+Requires Tauri development dependencies:
+
+- Rust toolchain (`rustup`)
+- Platform-specific libraries (see [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/))
+
+### macOS
 
 ```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+xcode-select --install
 ```
+
+### Windows
+
+Install [Build Tools for Visual Studio](https://visualstudio.microsoft.com/visual-cpp-build-tools/) with C++ workload.
+
+### Linux
+
+```bash
+# Ubuntu/Debian
+sudo apt install libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
+```
+
+## Debugging
+
+- **Frontend**: DevTools available in dev mode (right-click → Inspect)
+- **Backend**: Use `console.log()` in Rust or attach debugger to `src-tauri` process
+
+## Configuration
+
+Tauri config: `packages/desktop/src-tauri/tauri.conf.json`
+
+Key settings:
+- `identifier`: App bundle ID
+- `windows`: Window size, title, etc.
+- `bundle`: Icon, category, targets
+
+## Troubleshooting
+
+### "Tauri not found"
+
+Ensure you're running from repo root with dependencies installed.
+
+### Build fails on Linux
+
+Install required dependencies (see Prerequisites above).
+
+### Window is blank
+
+Check Vite dev server is running on port 1420.

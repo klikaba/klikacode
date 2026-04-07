@@ -5,10 +5,14 @@ import { onCleanup, onMount } from "solid-js"
 
 export function DialogThemeList() {
   const theme = useTheme()
+  const displayName = (value: string) => {
+    if (value === "opencode") return "Klika Code"
+    return value
+  }
   const options = Object.keys(theme.all())
     .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }))
     .map((value) => ({
-      title: value,
+      title: displayName(value),
       value: value,
     }))
   const dialog = useDialog()
