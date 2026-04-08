@@ -12,9 +12,11 @@
   --color-text-muted: #6e6e73;
   --color-text-disabled: #86868b;
 
-  --color-accent: #007aff;
-  --color-accent-hover: #0056b3;
-  --color-accent-active: #004085;
+  /* Klika brand colors */
+  --color-accent: #228ECE;
+  --color-accent-hover: #1a73a8;
+  --color-accent-active: #145a82;
+  --color-accent-secondary: #563DF0;
 
   --color-success: #30d158;
   --color-warning: #ff9f0a;
@@ -56,9 +58,11 @@
     --color-text-muted: #a1a1a6;
     --color-text-disabled: #68686f;
 
-    --color-accent: #007aff;
-    --color-accent-hover: #0056b3;
-    --color-accent-active: #004085;
+    /* Klika brand colors - adjusted for dark mode */
+    --color-accent: #228ECE;
+    --color-accent-hover: #3aa0de;
+    --color-accent-active: #52b2ee;
+    --color-accent-secondary: #705df5;
 
     --color-success: #30d158;
     --color-warning: #ff9f0a;

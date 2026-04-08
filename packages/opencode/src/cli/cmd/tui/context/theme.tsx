@@ -155,7 +155,7 @@ const [store, setStore] = createStore<State>({
   themes: listThemes(),
   mode: "dark",
   lock: undefined,
-  active: "opencode",
+  active: "lucent-orng",
   ready: false,
 })
 
@@ -310,6 +310,11 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
       if (value === "dark" || value === "light") return value
       return
     }
+    const normalizeSavedTheme = (value: unknown) => {
+      if (value === "opencode") return "lucent-orng"
+      if (typeof value === "string") return value
+      return "lucent-orng"
+    }
 
     setStore(
       produce((draft) => {
@@ -317,8 +322,8 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
         const mode = pick(kv.get("theme_mode", props.mode))
         draft.mode = lock ?? mode ?? props.mode
         draft.lock = lock
-        const active = config.theme ?? kv.get("theme", "opencode")
-        draft.active = typeof active === "string" ? active : "opencode"
+        draft.active =
+          typeof config.theme === "string" ? config.theme : normalizeSavedTheme(kv.get("theme", "lucent-orng"))
         draft.ready = false
       }),
     )
@@ -337,7 +342,7 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
             syncThemes()
           })
           .catch(() => {
-            setStore("active", "opencode")
+            setStore("active", "lucent-orng")
           }),
       ]).finally(() => {
         setStore("ready", true)
@@ -356,7 +361,7 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
             systemTheme = undefined
             syncThemes()
             if (store.active === "system") {
-              setStore("active", "opencode")
+              setStore("active", "lucent-orng")
             }
             return
           }
@@ -367,7 +372,7 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
           systemTheme = undefined
           syncThemes()
           if (store.active === "system") {
-            setStore("active", "opencode")
+            setStore("active", "lucent-orng")
           }
         })
     }
@@ -416,11 +421,11 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
 
       const saved = kv.get("theme")
       if (typeof saved === "string") {
-        const theme = store.themes[saved]
+        const theme = store.themes[normalizeSavedTheme(saved)]
         if (theme) return resolveTheme(theme, store.mode)
       }
 
-      return resolveTheme(store.themes.opencode, store.mode)
+      return resolveTheme(store.themes["lucent-orng"], store.mode)
     })
 
     createEffect(() => {
